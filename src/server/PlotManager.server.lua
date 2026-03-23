@@ -88,7 +88,7 @@ local function createLobby()
 	titleLabel.Size = UDim2.new(1, 0, 0.6, 0)
 	titleLabel.Position = UDim2.new(0, 0, 0.05, 0)
 	titleLabel.BackgroundTransparency = 1
-	titleLabel.Text = "SPACE TYCOON"
+	titleLabel.Text = "GALAXY EMPIRE SIMULATOR"
 	titleLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
 	titleLabel.TextScaled = true
 	titleLabel.Font = Enum.Font.GothamBold
@@ -98,7 +98,7 @@ local function createLobby()
 	subtitleLabel.Size = UDim2.new(1, 0, 0.3, 0)
 	subtitleLabel.Position = UDim2.new(0, 0, 0.65, 0)
 	subtitleLabel.BackgroundTransparency = 1
-	subtitleLabel.Text = "Conquer the Galaxy!"
+	subtitleLabel.Text = "Build Your Galactic Empire!"
 	subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 	subtitleLabel.TextScaled = true
 	subtitleLabel.Font = Enum.Font.Gotham

@@ -102,7 +102,7 @@ end
 
 -- Tutorial steps
 local steps = {
-	{text = "Welcome to Space Tycoon! Build your galactic empire!", delay = 0},
+	{text = "Welcome to Galaxy Empire Simulator! Conquer the cosmos!", delay = 0},
 	{text = "Step on the green pads to buy businesses! Your Lemonade Stand was purchased automatically.", delay = 2},
 	{text = "Watch your credits grow! Build the next structure when you can afford it.", waitForPurchase = true},
 	{text = "Great job! Keep buying businesses to increase your income. Check out the SHOP for boosts!", delay = 5},
