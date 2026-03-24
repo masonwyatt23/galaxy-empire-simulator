@@ -37,6 +37,15 @@ local function checkAchievements(player)
 			earned = data.rebirthCount >= achievement.threshold
 		elseif achievement.trigger == "totalEarned" then
 			earned = data.totalEarned >= achievement.threshold
+		elseif achievement.trigger == "sectors" then
+			if data.exploredSectors then
+				local sectorCount = 0
+				for _ in pairs(data.exploredSectors) do
+					sectorCount = sectorCount + 1
+				end
+				-- Subtract 1 for the starting sector (threshold 1 = first real exploration)
+				earned = (sectorCount - 1) >= achievement.threshold
+			end
 		end
 
 		if earned then

@@ -186,8 +186,13 @@ RunService.Heartbeat:Connect(function(dt)
 
 				local income = Utils.getTotalIncome(data.ownedItems, multiplier, GameConfig)
 
+				-- Apply exploration bonus (artifacts + trade routes)
+				if _G.GetExplorationBonus then
+					income = income * _G.GetExplorationBonus(player)
+				end
+
 				if income > 0 then
-					_G.AddCash(player, income)
+					_G.AddCash(player, math.floor(income))
 				end
 			end
 		end

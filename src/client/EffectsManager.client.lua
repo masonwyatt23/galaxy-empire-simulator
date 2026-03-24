@@ -130,15 +130,40 @@ local lastKnownCash = 0
 local gameStartTime = tick()
 local UpdateCash = Remotes:WaitForChild("UpdateCash", 15)
 
+-- Color-coded income popup based on amount
+local function getIncomeColor(amount)
+	if amount >= 100000 then
+		return Color3.fromRGB(255, 215, 0) -- Gold
+	elseif amount >= 10000 then
+		return Color3.fromRGB(180, 100, 255) -- Purple
+	elseif amount >= 1000 then
+		return Color3.fromRGB(100, 180, 255) -- Blue
+	elseif amount >= 100 then
+		return Color3.fromRGB(100, 255, 100) -- Green
+	else
+		return Color3.fromRGB(220, 220, 220) -- White
+	end
+end
+
+local function getIncomeSize(amount)
+	if amount >= 100000 then return 28
+	elseif amount >= 10000 then return 24
+	elseif amount >= 1000 then return 22
+	else return 20 end
+end
+
 -- Floating income indicator
 local function showIncomePopup(amount)
+	local color = getIncomeColor(amount)
+	local textSize = getIncomeSize(amount)
+
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.new(0, 200, 0, 30)
 	label.Position = UDim2.new(0.5, -100 + math.random(-30, 30), 0.15, 0)
 	label.BackgroundTransparency = 1
 	label.Text = "+$" .. Utils.formatCash(amount)
-	label.TextColor3 = Color3.fromRGB(100, 255, 100)
-	label.TextSize = 20
+	label.TextColor3 = color
+	label.TextSize = textSize
 	label.Font = Enum.Font.GothamBold
 	label.TextStrokeTransparency = 0.5
 	label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
@@ -153,6 +178,31 @@ local function showIncomePopup(amount)
 
 	task.delay(1, function() label:Destroy() end)
 end
+
+-- Confetti burst effect (for purchases, milestones)
+local function showConfettiBurst()
+	for i = 1, 15 do
+		local confetti = Instance.new("Frame")
+		confetti.Size = UDim2.new(0, math.random(4, 8), 0, math.random(8, 16))
+		confetti.Position = UDim2.new(0.5, math.random(-200, 200), 0.5, math.random(-100, 100))
+		confetti.BackgroundColor3 = Color3.fromHSV(math.random() * 360 / 360, 0.8, 1)
+		confetti.BorderSizePixel = 0
+		confetti.Rotation = math.random(0, 360)
+		confetti.Parent = effectsGui
+
+		local tweenInfo = TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		TweenService:Create(confetti, tweenInfo, {
+			Position = confetti.Position + UDim2.new(0, math.random(-50, 50), 0, math.random(100, 300)),
+			BackgroundTransparency = 1,
+			Rotation = confetti.Rotation + math.random(-180, 180),
+		}):Play()
+
+		task.delay(1.5, function() confetti:Destroy() end)
+	end
+end
+
+-- Expose confetti for other scripts
+_G.ShowConfetti = showConfettiBurst
 
 -- Achievement banner
 local function showAchievementBanner(name, reward)
@@ -235,6 +285,7 @@ end)
 
 RebirthSuccess.OnClientEvent:Connect(function(newCount)
 	showRebirthEffect()
+	showConfettiBurst()
 	task.wait(0.5)
 	showFloatingText("Rebirth #" .. newCount .. "!", Color3.fromRGB(255, 100, 100))
 end)

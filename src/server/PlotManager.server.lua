@@ -30,12 +30,12 @@ local function getTier(itemIndex)
 end
 
 -- Helper: get grid position within a plot for item index
--- 3 rows x 6 columns layout (supports up to 18 items including VIP)
+-- 3 rows x 11 columns layout (supports up to 33 items)
 local function getItemPosition(itemIndex, plotCenter)
-	local col = math.ceil(itemIndex / 3)   -- 1-6
+	local col = math.ceil(itemIndex / 3)   -- 1-11
 	local row = ((itemIndex - 1) % 3) + 1  -- 1-3
-	local xOffset = (col - 3.5) * 12        -- spreads evenly across plot
-	local zOffset = (row - 2) * 14          -- -14, 0, 14
+	local xOffset = (col - 6) * 7           -- tighter spacing for more columns
+	local zOffset = (row - 2) * 12          -- -12, 0, 12
 	return Vector3.new(
 		plotCenter.X + xOffset,
 		plotCenter.Y + 1,
@@ -678,6 +678,94 @@ _G.OnItemPurchased = function(player, itemIndex)
 end
 
 ------------------------------------------------------------------------
+-- PRESTIGE TIERS — visual upgrades based on rebirth count
+------------------------------------------------------------------------
+local PRESTIGE_TIERS = {
+	{rebirths = 3,  color = Color3.fromRGB(205, 127, 50),  name = "Bronze",  material = Enum.Material.Metal},
+	{rebirths = 5,  color = Color3.fromRGB(192, 192, 192), name = "Silver",  material = Enum.Material.Metal},
+	{rebirths = 10, color = Color3.fromRGB(255, 215, 0),   name = "Gold",    material = Enum.Material.Neon},
+	{rebirths = 15, color = Color3.fromRGB(185, 242, 255), name = "Diamond", material = Enum.Material.Glass},
+	{rebirths = 25, color = Color3.fromRGB(255, 100, 255), name = "Rainbow", material = Enum.Material.ForceField},
+}
+
+local function getPrestigeTier(rebirthCount)
+	local bestTier = nil
+	for _, tier in ipairs(PRESTIGE_TIERS) do
+		if rebirthCount >= tier.rebirths then
+			bestTier = tier
+		end
+	end
+	return bestTier
+end
+
+local function applyPrestigeVisuals(plotNum, rebirthCount)
+	local plotFolder = workspace:FindFirstChild("Plot_" .. plotNum)
+	if not plotFolder then return end
+
+	local tier = getPrestigeTier(rebirthCount)
+	if not tier then return end
+
+	-- Update border colors and material
+	for _, child in ipairs(plotFolder:GetChildren()) do
+		if child.Name:find("Border_") then
+			child.Color = tier.color
+			child.Material = tier.material
+		end
+	end
+
+	-- Add glow effect for Gold+ tiers
+	if rebirthCount >= 10 then
+		local base = plotFolder:FindFirstChild("PlotBase")
+		if base and not base:FindFirstChild("PrestigeGlow") then
+			local glow = Instance.new("PointLight")
+			glow.Name = "PrestigeGlow"
+			glow.Color = tier.color
+			glow.Brightness = 0.8
+			glow.Range = 40
+			glow.Parent = base
+		elseif base then
+			local glow = base:FindFirstChild("PrestigeGlow")
+			if glow then glow.Color = tier.color end
+		end
+	end
+
+	-- Add particle effects for Diamond+ tiers
+	if rebirthCount >= 15 then
+		local base = plotFolder:FindFirstChild("PlotBase")
+		if base and not base:FindFirstChild("PrestigeParticles") then
+			local particles = Instance.new("ParticleEmitter")
+			particles.Name = "PrestigeParticles"
+			particles.Color = ColorSequence.new(tier.color)
+			particles.Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.5),
+				NumberSequenceKeypoint.new(1, 0),
+			})
+			particles.Lifetime = NumberRange.new(1, 2)
+			particles.Rate = 8
+			particles.Speed = NumberRange.new(1, 3)
+			particles.SpreadAngle = Vector2.new(180, 180)
+			particles.Parent = base
+		elseif base then
+			local p = base:FindFirstChild("PrestigeParticles")
+			if p then p.Color = ColorSequence.new(tier.color) end
+		end
+	end
+
+	-- Update ownership sign with prestige badge
+	local sign = plotFolder:FindFirstChild("OwnerSign")
+	if sign then
+		local gui = sign:FindFirstChildOfClass("SurfaceGui")
+		if gui then
+			local status = gui:FindFirstChild("Status")
+			if status then
+				status.Text = tier.name .. " Prestige"
+				status.TextColor3 = tier.color
+			end
+		end
+	end
+end
+
+------------------------------------------------------------------------
 -- REBIRTH CALLBACK — reset plot buildings
 ------------------------------------------------------------------------
 _G.OnRebirth = function(player)
@@ -706,6 +794,12 @@ _G.OnRebirth = function(player)
 
 	-- Update pad colors
 	updatePadStates(player)
+
+	-- Apply prestige visuals after rebirth
+	local data = _G.GetPlayerData and _G.GetPlayerData(player)
+	if data then
+		applyPrestigeVisuals(plotNum, data.rebirthCount)
+	end
 end
 
 ------------------------------------------------------------------------
@@ -760,6 +854,12 @@ local function onPlayerAdded(player)
 				statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
 			end
 		end
+	end
+
+	-- Apply prestige visuals if player has rebirths
+	local data = _G.GetPlayerData and _G.GetPlayerData(player)
+	if data and data.rebirthCount and data.rebirthCount > 0 then
+		applyPrestigeVisuals(plotNum, data.rebirthCount)
 	end
 
 	-- Rebuild any owned buildings (returning player)

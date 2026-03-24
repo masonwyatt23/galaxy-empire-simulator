@@ -250,6 +250,40 @@ local function createHUD()
 	questsCorner.CornerRadius = UDim.new(0, 8)
 	questsCorner.Parent = questsButton
 
+	-- Explore button (next to quests)
+	local exploreButton = Instance.new("TextButton")
+	exploreButton.Name = "ExploreButton"
+	exploreButton.Size = UDim2.new(0, 100, 0, 45)
+	exploreButton.Position = UDim2.new(0, 470, 1, -55)
+	exploreButton.BackgroundColor3 = Color3.fromRGB(80, 50, 180)
+	exploreButton.BorderSizePixel = 0
+	exploreButton.Text = "EXPLORE"
+	exploreButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	exploreButton.TextSize = 16
+	exploreButton.Font = Enum.Font.GothamBold
+	exploreButton.Parent = screenGui
+
+	local exploreCorner = Instance.new("UICorner")
+	exploreCorner.CornerRadius = UDim.new(0, 8)
+	exploreCorner.Parent = exploreButton
+
+	-- Trade button (next to explore)
+	local tradeButton = Instance.new("TextButton")
+	tradeButton.Name = "TradeButton"
+	tradeButton.Size = UDim2.new(0, 100, 0, 45)
+	tradeButton.Position = UDim2.new(0, 580, 1, -55)
+	tradeButton.BackgroundColor3 = Color3.fromRGB(50, 150, 150)
+	tradeButton.BorderSizePixel = 0
+	tradeButton.Text = "TRADE"
+	tradeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	tradeButton.TextSize = 16
+	tradeButton.Font = Enum.Font.GothamBold
+	tradeButton.Parent = screenGui
+
+	local tradeCorner = Instance.new("UICorner")
+	tradeCorner.CornerRadius = UDim.new(0, 8)
+	tradeCorner.Parent = tradeButton
+
 	-- Progress bar (below Next Item panel)
 	local progressFrame = Instance.new("Frame")
 	progressFrame.Name = "ProgressBar"
@@ -438,6 +472,22 @@ hud.QuestsButton.MouseButton1Click:Connect(function()
 		end
 	elseif _G.ShowQuestUI then
 		_G.ShowQuestUI()
+	end
+end)
+
+-- Explore button
+hud.ExploreButton.MouseButton1Click:Connect(function()
+	if _G.PlayButtonClick then _G.PlayButtonClick() end
+	if _G.ShowExploreUI then
+		_G.ShowExploreUI()
+	end
+end)
+
+-- Trade button
+hud.TradeButton.MouseButton1Click:Connect(function()
+	if _G.PlayButtonClick then _G.PlayButtonClick() end
+	if _G.ShowTradeUI then
+		_G.ShowTradeUI()
 	end
 end)
 

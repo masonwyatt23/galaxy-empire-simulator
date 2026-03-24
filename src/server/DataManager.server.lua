@@ -33,6 +33,9 @@ local DEFAULT_DATA = {
 	achievements = {},
 	dailyQuests = {},
 	lastQuestReset = 0,
+	exploredSectors = {["4_4"] = "start"},
+	artifactCount = 0,
+	tradeRoutes = {},
 }
 
 -- Poll-wait helper: waits for a _G function to be registered by another script

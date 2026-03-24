@@ -30,16 +30,31 @@ local function createSound(name, assetId, volume, looped)
 	return sound
 end
 
--- Create all sounds (using verified Roblox default audio assets)
-createSound("Purchase",      138677306, 0.4)     -- Coin collect
-createSound("BuildingPop",   138677306, 0.3)     -- Same coin (pop feel)
-createSound("Rebirth",       138677306, 0.7)     -- Louder coin for fanfare
-createSound("Milestone",     138677306, 0.5)     -- Celebration
-createSound("ButtonClick",   138677306, 0.15)    -- Soft click
-createSound("DailyReward",   138677306, 0.5)     -- Reward jingle
-createSound("CodeSuccess",   138677306, 0.4)     -- Success ding
-createSound("Achievement",   138677306, 0.6)     -- Achievement unlock
--- No background music for now (needs a verified looping track)
+-- Create all sounds with varied Roblox library audio
+createSound("Purchase",      9125402735, 0.4)     -- Cash register cha-ching
+createSound("BuildingPop",   9125786610, 0.3)     -- Pop/whoosh
+createSound("Rebirth",       9125836726, 0.6)     -- Epic fanfare
+createSound("Milestone",     9125402735, 0.5)     -- Cash celebration
+createSound("ButtonClick",   6895079853, 0.15)    -- UI click
+createSound("DailyReward",   9125836726, 0.5)     -- Reward jingle
+createSound("CodeSuccess",   9125402735, 0.4)     -- Success ding
+createSound("Achievement",   9125836726, 0.6)     -- Achievement fanfare
+createSound("TradeReceived", 9125402735, 0.5)     -- Gift received
+createSound("StockBuy",      6895079853, 0.3)     -- Stock trade click
+
+-- Background music (ambient upbeat loop)
+local bgMusic = createSound("BackgroundMusic", 1837849285, 0.12, true)
+
+-- Start background music after delay
+task.spawn(function()
+	task.wait(3)
+	bgMusic:Play()
+end)
+
+-- Volume control exposed globally
+_G.SetMusicVolume = function(vol)
+	bgMusic.Volume = math.clamp(vol, 0, 1)
+end
 
 -- Play a sound by name
 local function playSound(name)

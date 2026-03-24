@@ -36,10 +36,32 @@ GameConfig.TycoonItems = {
 	{name = "Quantum Computer",   cost = 1200000, income = 15000, description = "Calculate infinite wealth"},
 	{name = "Galaxy Core",        cost = 3500000, income = 35000, description = "The ultimate space empire"},
 
-	-- Tier 6: VIP Exclusive (requires VIP game pass)
-	{name = "VIP Mothership",     cost = 8000000,  income = 50000,  description = "Command the fleet", vip = true},
-	{name = "VIP Dimension Rift", cost = 15000000, income = 80000,  description = "Multiverse profits", vip = true},
-	{name = "VIP Cosmic Throne",  cost = 30000000, income = 150000, description = "Rule the cosmos", vip = true},
+	-- Tier 6: Deep Space
+	{name = "Nebula Harvester",   cost = 5000000,   income = 75000,   description = "Mine the cosmos"},
+	{name = "Antimatter Plant",   cost = 12000000,  income = 120000,  description = "Pure energy profit"},
+	{name = "Wormhole Gateway",   cost = 25000000,  income = 200000,  description = "Shortcut to wealth"},
+
+	-- Tier 7: Intergalactic
+	{name = "Dark Matter Lab",    cost = 50000000,  income = 350000,  description = "Unseen fortunes"},
+	{name = "Time Distortion",    cost = 100000000, income = 600000,  description = "Bend time for credits"},
+	{name = "Void Forge",         cost = 200000000, income = 1000000, description = "Forge from nothing"},
+
+	-- Tier 8: Universal
+	{name = "Parallel Dimension", cost = 500000000,  income = 1800000, description = "Double everything"},
+	{name = "Big Bang Reactor",   cost = 1000000000, income = 3000000, description = "Create universes"},
+	{name = "Infinity Engine",    cost = 2000000000, income = 5000000, description = "Unlimited power"},
+
+	-- Tier 9: Omniversal
+	{name = "Reality Weaver",     cost = 5000000000,  income = 10000000,  description = "Shape existence"},
+	{name = "Cosmic Nexus",       cost = 10000000000, income = 18000000,  description = "Center of everything"},
+
+	-- Tier 10: Secret
+	{name = "The Singularity",    cost = 25000000000, income = 50000000,  description = "Beyond comprehension", secret = true},
+
+	-- VIP Exclusive
+	{name = "VIP Mothership",     cost = 50000000000,  income = 80000000,  description = "Command the fleet", vip = true},
+	{name = "VIP Dimension Rift", cost = 100000000000, income = 150000000, description = "Multiverse profits", vip = true},
+	{name = "VIP Cosmic Throne",  cost = 250000000000, income = 300000000, description = "Rule the cosmos", vip = true},
 }
 
 -- Rebirth system (called "Warp" in Space Tycoon)
@@ -51,7 +73,7 @@ GameConfig.Rebirth = {
 }
 
 -- Number of standard (non-VIP) items
-GameConfig.StandardItemCount = 15
+GameConfig.StandardItemCount = 28
 
 -- Plot settings
 GameConfig.MaxPlots = 8
@@ -65,10 +87,15 @@ GameConfig.BuildingColors = {
 	Color3.fromRGB(50, 255, 150),   -- Tier 3: Green (bio)
 	Color3.fromRGB(255, 150, 50),   -- Tier 4: Orange (energy)
 	Color3.fromRGB(255, 50, 100),   -- Tier 5: Red (power)
-	Color3.fromRGB(255, 215, 0),    -- Tier 6: Gold (VIP)
+	Color3.fromRGB(200, 50, 255),   -- Tier 6: Deep Space Purple
+	Color3.fromRGB(50, 255, 255),   -- Tier 7: Intergalactic Cyan
+	Color3.fromRGB(255, 100, 200),  -- Tier 8: Universal Pink
+	Color3.fromRGB(255, 255, 255),  -- Tier 9: Omniversal White
+	Color3.fromRGB(255, 215, 0),    -- Tier 10: Secret Gold
+	Color3.fromRGB(255, 215, 0),    -- VIP Gold
 }
-GameConfig.BuildingHeights = {5, 8, 12, 16, 22, 28}
-GameConfig.BuildingMaterials = {"Metal", "DiamondPlate", "Neon", "ForceField", "Neon", "ForceField"}
+GameConfig.BuildingHeights = {5, 8, 12, 16, 22, 28, 33, 38, 43, 48, 52}
+GameConfig.BuildingMaterials = {"Metal", "DiamondPlate", "Neon", "ForceField", "Neon", "ForceField", "Glass", "Neon", "ForceField", "ForceField", "ForceField"}
 
 -- Plot base colors (space-themed: dark metallics)
 GameConfig.PlotColors = {
@@ -89,6 +116,9 @@ GameConfig.Codes = {
 	GALAXY   = 10000,
 	WARP     = 50000,
 	COSMIC   = 25000,
+	CASHFLOW = 25000,  -- Cross-promo: play CashFlow Empire
+	FOODIE   = 25000,  -- Cross-promo: play Food Factory
+	TOWER    = 25000,  -- Cross-promo: play Tower of Chaos
 }
 
 -- Daily reward amounts
@@ -102,13 +132,38 @@ GameConfig.DailyRewards = {
 	500000,
 }
 
+-- Exploration config
+GameConfig.Exploration = {
+	baseCost = 2000,
+	gridSize = 8,
+	cooldown = 10,
+	maxArtifacts = 10,
+	artifactBonusPercent = 2,
+	tradeRouteBonusPercent = 5,
+	anomalyDuration = 60,
+	anomalyMultiplier = 3,
+	hostileLossPercent = 0.1,
+	emptyReward = 1000,
+	resourceMin = 5000,
+	resourceMax = 50000,
+	sectorWeights = {
+		resource_cache = 30,
+		alien_artifact = 15,
+		anomaly = 20,
+		trade_route = 10,
+		hostile = 15,
+		empty = 10,
+	},
+}
+
 -- Quest definitions
 GameConfig.QuestPool = {
 	{type = "earn_cash",   description = "Earn %s credits",       baseTarget = 50000,  rewardMult = 2},
 	{type = "buy_items",   description = "Build %s structures",   baseTarget = 3,      rewardMult = 3},
 	{type = "rebirth",     description = "Warp %s time(s)",       baseTarget = 1,      rewardMult = 5},
 	{type = "play_time",   description = "Explore for %s minutes", baseTarget = 10,     rewardMult = 2},
-	{type = "reach_item",  description = "Reach structure #%s",   baseTarget = 10,     rewardMult = 3},
+	{type = "reach_item",       description = "Reach structure #%s",   baseTarget = 10,     rewardMult = 3},
+	{type = "explore_sectors",  description = "Explore %s sectors",   baseTarget = 5,      rewardMult = 4},
 }
 
 -- Achievements
@@ -120,6 +175,9 @@ GameConfig.Achievements = {
 	{id = "warp_veteran",    name = "Warp Veteran",     trigger = "rebirths",   threshold = 5,       reward = 100000},
 	{id = "millionaire",     name = "Space Mogul",      trigger = "totalEarned", threshold = 1000000, reward = 50000},
 	{id = "ten_million",     name = "Galactic Tycoon",  trigger = "totalEarned", threshold = 10000000, reward = 500000},
+	{id = "first_contact",   name = "First Contact",    trigger = "sectors",     threshold = 1,        reward = 2000},
+	{id = "star_mapper",     name = "Star Cartographer", trigger = "sectors",    threshold = 32,       reward = 100000},
+	{id = "galactic_emperor", name = "Galactic Emperor", trigger = "sectors",    threshold = 64,       reward = 1000000},
 }
 
 return GameConfig
