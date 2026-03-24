@@ -178,6 +178,16 @@ GameConfig.Achievements = {
 	{id = "first_contact",   name = "First Contact",    trigger = "sectors",     threshold = 1,        reward = 2000},
 	{id = "star_mapper",     name = "Star Cartographer", trigger = "sectors",    threshold = 32,       reward = 100000},
 	{id = "galactic_emperor", name = "Galactic Emperor", trigger = "sectors",    threshold = 64,       reward = 1000000},
+	-- Building milestones (expanded)
+	{id = "deep_space",    name = "Deep Space Explorer", trigger = "items",      threshold = 20,       reward = 200000},
+	{id = "intergalactic", name = "Intergalactic",       trigger = "items",      threshold = 25,       reward = 500000},
+	{id = "universal",     name = "Universal Emperor",   trigger = "items",      threshold = 28,       reward = 1000000},
+	-- Rebirth milestones (expanded)
+	{id = "warp_10",       name = "Warp Master",         trigger = "rebirths",   threshold = 10,       reward = 500000},
+	{id = "warp_25",       name = "Warp Legend",          trigger = "rebirths",   threshold = 25,       reward = 5000000},
+	-- Wealth milestones (expanded)
+	{id = "hundred_mil",   name = "100M Credits Club",    trigger = "totalEarned", threshold = 100000000,  reward = 5000000},
+	{id = "billionaire",   name = "Credit Billionaire",   trigger = "totalEarned", threshold = 1000000000, reward = 50000000},
 }
 
 return GameConfig

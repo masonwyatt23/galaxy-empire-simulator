@@ -19,10 +19,20 @@ local BuildingAppearedRemote = Instance.new("RemoteEvent")
 BuildingAppearedRemote.Name = "BuildingAppeared"
 BuildingAppearedRemote.Parent = Remotes
 
+-- Create remotes for plot visiting system
+local ReturnToPlotRemote = Instance.new("RemoteEvent")
+ReturnToPlotRemote.Name = "ReturnToPlot"
+ReturnToPlotRemote.Parent = Remotes
+
+local VisitingPlotRemote = Instance.new("RemoteEvent")
+VisitingPlotRemote.Name = "VisitingPlot"
+VisitingPlotRemote.Parent = Remotes
+
 -- State
 local PlotModels = {}     -- [plotNum] = { base, pads = {}, buildings = {}, ownerSign }
 local PlayerPlotRef = {}  -- [player] = plotNum
 local touchDebounce = {}  -- [key] = true
+local visitDebounce = {}  -- [player] = true (2s cooldown for visit pads)
 
 -- Helper: get tier (1-5) for item index (1-15)
 local function getTier(itemIndex)
@@ -533,6 +543,73 @@ local function createPlot(plotNum)
 	statusLabel.Font = Enum.Font.Gotham
 	statusLabel.Parent = signGui
 
+	-- Visit Pad (in front of the ownership sign)
+	local visitPad = Instance.new("Part")
+	visitPad.Name = "VisitPad"
+	visitPad.Size = Vector3.new(6, 0.5, 4)
+	visitPad.Position = Vector3.new(center.X, 0.25, center.Z - plotSize / 2 - 4)
+	visitPad.Anchored = true
+	visitPad.Color = Color3.fromRGB(50, 200, 50)
+	visitPad.Material = Enum.Material.Neon
+	visitPad.CanCollide = true
+	visitPad.Transparency = 0
+	visitPad.Parent = plotFolder
+
+	local visitBillboard = Instance.new("BillboardGui")
+	visitBillboard.Name = "VisitInfo"
+	visitBillboard.Size = UDim2.new(0, 220, 0, 50)
+	visitBillboard.StudsOffset = Vector3.new(0, 3, 0)
+	visitBillboard.AlwaysOnTop = false
+	visitBillboard.Enabled = false
+	visitBillboard.Parent = visitPad
+
+	local visitLabel = Instance.new("TextLabel")
+	visitLabel.Name = "VisitLabel"
+	visitLabel.Size = UDim2.new(1, 0, 1, 0)
+	visitLabel.BackgroundTransparency = 1
+	visitLabel.Text = "Visit Plot " .. plotNum
+	visitLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	visitLabel.TextScaled = true
+	visitLabel.Font = Enum.Font.GothamBold
+	visitLabel.TextStrokeTransparency = 0.3
+	visitLabel.Parent = visitBillboard
+
+	-- Hide visit pad by default (only show when another player owns the plot)
+	visitPad.Transparency = 1
+	visitPad.CanCollide = false
+
+	-- Visit pad touch handler
+	visitPad.Touched:Connect(function(hit)
+		local character = hit.Parent
+		if not character then return end
+		local touchPlayer = Players:GetPlayerFromCharacter(character)
+		if not touchPlayer then return end
+
+		-- Only allow visiting OTHER players' plots
+		local plotOwner = nil
+		for p, pNum in pairs(PlayerPlotRef) do
+			if pNum == plotNum and p ~= touchPlayer then
+				plotOwner = p
+				break
+			end
+		end
+		if not plotOwner then return end
+
+		-- Debounce (2 second cooldown)
+		if visitDebounce[touchPlayer] then return end
+		visitDebounce[touchPlayer] = true
+		task.delay(2, function() visitDebounce[touchPlayer] = nil end)
+
+		-- Teleport visitor to the center of the plot
+		local hrp = character:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			hrp.CFrame = CFrame.new(center.X, 5, center.Z)
+		end
+
+		-- Show RETURN button on visitor's UI
+		VisitingPlotRemote:FireClient(touchPlayer, true)
+	end)
+
 	-- Create purchase pads for all 15 items
 	local pads = {}
 	for i = 1, #GameConfig.TycoonItems do
@@ -956,6 +1033,26 @@ task.spawn(function()
 			end
 		end
 	end
+end)
+
+------------------------------------------------------------------------
+-- RETURN TO PLOT (plot visiting system)
+------------------------------------------------------------------------
+ReturnToPlotRemote.OnServerEvent:Connect(function(player)
+	local plotNum = PlayerPlotRef[player]
+	if not plotNum or not PlotModels[plotNum] then return end
+
+	local plotData = PlotModels[plotNum]
+	local character = player.Character
+	if character then
+		local hrp = character:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			hrp.CFrame = CFrame.new(plotData.center.X, 5, plotData.center.Z)
+		end
+	end
+
+	-- Hide the RETURN button
+	VisitingPlotRemote:FireClient(player, false)
 end)
 
 ------------------------------------------------------------------------

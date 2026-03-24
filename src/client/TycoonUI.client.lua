@@ -20,6 +20,8 @@ local ItemPurchased = Remotes:WaitForChild("ItemPurchased", 15)
 local RequestRebirth = Remotes:WaitForChild("RequestRebirth", 15)
 local RebirthInfo = Remotes:WaitForChild("RebirthInfo", 15)
 local RebirthSuccess = Remotes:WaitForChild("RebirthSuccess", 15)
+local ReturnToPlot = Remotes:WaitForChild("ReturnToPlot", 15)
+local VisitingPlot = Remotes:WaitForChild("VisitingPlot", 15)
 
 local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
@@ -319,6 +321,30 @@ local function createHUD()
 	progressText.ZIndex = 2
 	progressText.Parent = progressFrame
 
+	-- Return to My Plot button (hidden by default, shown when visiting another plot)
+	local returnButton = Instance.new("TextButton")
+	returnButton.Name = "ReturnButton"
+	returnButton.Size = UDim2.new(0, 220, 0, 45)
+	returnButton.Position = UDim2.new(0.5, -110, 0, 160)
+	returnButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+	returnButton.BorderSizePixel = 0
+	returnButton.Text = "RETURN TO MY PLOT"
+	returnButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	returnButton.TextSize = 18
+	returnButton.Font = Enum.Font.GothamBold
+	returnButton.Visible = false
+	returnButton.ZIndex = 10
+	returnButton.Parent = screenGui
+
+	local returnCorner = Instance.new("UICorner")
+	returnCorner.CornerRadius = UDim.new(0, 8)
+	returnCorner.Parent = returnButton
+
+	local returnStroke = Instance.new("UIStroke")
+	returnStroke.Color = Color3.fromRGB(255, 100, 100)
+	returnStroke.Thickness = 2
+	returnStroke.Parent = returnButton
+
 	return screenGui
 end
 
@@ -489,6 +515,17 @@ hud.TradeButton.MouseButton1Click:Connect(function()
 	if _G.ShowTradeUI then
 		_G.ShowTradeUI()
 	end
+end)
+
+-- Return to My Plot button
+hud.ReturnButton.MouseButton1Click:Connect(function()
+	ReturnToPlot:FireServer()
+	hud.ReturnButton.Visible = false
+end)
+
+-- Listen for visiting plot state changes
+VisitingPlot.OnClientEvent:Connect(function(isVisiting)
+	hud.ReturnButton.Visible = (isVisiting == true)
 end)
 
 -- Progress bar update
